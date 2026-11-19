@@ -6,6 +6,7 @@ import {
   getRepositoryLanguages,
 } from "@/lib/github";
 
+import { calculateDeveloperScore } from "@/lib/scoring";
 import { getRecentRepositoryActivity } from "@/lib/activity";
 import { generateDeveloperInsights } from "@/lib/gemini";
 
@@ -13,6 +14,7 @@ export async function GET(request, { params }) {
   try {
     const { username } = await params;
 
+    // Fetch GitHub profile and repositories.
     const [profile, repositories] = await Promise.all([
       getGitHubProfile(username),
       getGitHubRepositories(username),
@@ -21,7 +23,7 @@ export async function GET(request, { params }) {
     // Collect recent development activity.
     const activity = await getRecentRepositoryActivity(repositories);
 
-    // Fetch README files from up to 10 original repositories.
+    // Select up to 10 original repositories for README analysis.
     const selectedRepos = repositories
       .filter((repo) => !repo.fork)
       .slice(0, 10);
@@ -43,6 +45,7 @@ export async function GET(request, { params }) {
       ])
     );
 
+    // Calculate repository statistics.
     const totalStars = repositories.reduce(
       (total, repo) => total + repo.stargazers_count,
       0
@@ -53,11 +56,11 @@ export async function GET(request, { params }) {
       0
     );
 
-    // Fetch actual language statistics for every original repository.
     const originalRepositories = repositories.filter(
       (repo) => !repo.fork
     );
 
+    // Fetch actual language statistics for original repositories.
     const languageResults = await Promise.all(
       originalRepositories.map(async (repo) => ({
         name: repo.full_name,
@@ -68,7 +71,6 @@ export async function GET(request, { params }) {
       }))
     );
 
-    // Language breakdown for individual repositories.
     const repositoryLanguages = Object.fromEntries(
       languageResults.map(({ name, languages }) => [
         name,
@@ -76,7 +78,7 @@ export async function GET(request, { params }) {
       ])
     );
 
-    // Aggregate language usage across all original repositories.
+    // Aggregate language usage across original repositories.
     const languageTotals = {};
 
     for (const result of languageResults) {
@@ -105,7 +107,7 @@ export async function GET(request, { params }) {
             : 0,
       }));
 
-    // Raw GitHub data sent to the AI evaluator.
+    // Prepare evidence for AI qualitative evaluation.
     const analysisPayload = {
       profile: {
         username: profile.login,
@@ -146,7 +148,6 @@ export async function GET(request, { params }) {
         url: repo.html_url,
         primaryLanguage: repo.language,
 
-        // Actual language usage measured in bytes.
         languageBreakdown:
           repositoryLanguages[repo.full_name] || {},
 
@@ -173,9 +174,20 @@ export async function GET(request, { params }) {
       })),
     };
 
-    // AI independently evaluates all six categories and calculates the score.
+    // AI evaluates all six categories qualitatively.
+    // JavaScript calculates the final hybrid score.
     const aiEvaluation = await generateDeveloperInsights(
       analysisPayload
+    );
+
+    // Combine objective evidence (40%) and AI evaluation (60%).
+    const scoringResult = calculateDeveloperScore(
+      profile,
+      repositories,
+      readmes,
+      activity,
+      languages,
+      aiEvaluation
     );
 
     return Response.json({
@@ -204,17 +216,20 @@ export async function GET(request, { params }) {
           languages,
         },
 
-        score: aiEvaluation.overallScore,
-        breakdown: aiEvaluation.breakdown,
+        // Hybrid scoring results.
+        score: scoringResult.overallScore,
+        breakdown: scoringResult.breakdown,
+        scoringMethod: scoringResult.scoringMethod,
+        coverage: scoringResult.coverage,
 
+        // AI-generated qualitative insights.
         insights: {
+          categoryInsights: aiEvaluation.categoryInsights,
           summary: aiEvaluation.summary,
           strengths: aiEvaluation.strengths,
           improvements: aiEvaluation.improvements,
           recommendations: aiEvaluation.recommendations,
         },
-
-        coverage: aiEvaluation.coverage,
 
         repositories: repositories.map((repo) => ({
           name: repo.name,
