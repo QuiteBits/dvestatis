@@ -12,7 +12,21 @@ const STATE_COOKIE = "devstatis_oauth_state";
 const NEXT_COOKIE = "devstatis_oauth_next";
 
 function getSecret() {
-  return process.env.SESSION_SECRET || null;
+  const secret = process.env.SESSION_SECRET;
+  if (!secret) {
+    if (process.env.NEXT_PUBLIC_VERCEL) {
+      // On Vercel, ensure SESSION_SECRET is set; fallback to a random
+      // value so the app doesn't completely break, but log a warning.
+      console.warn(
+        "SESSION_SECRET is not set. Using a generated fallback " +
+          "secret. Set SESSION_SECRET in your environment variables " +
+          "for production use."
+      );
+      return randomBytes(32).toString("hex");
+    }
+    return null;
+  }
+  return secret;
 }
 
 export function createOAuthState() {

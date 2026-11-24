@@ -1,4 +1,3 @@
-import "@fontsource-variable/josefin-sans";
 import "./globals.css";
 
 export const metadata = {
