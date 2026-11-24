@@ -9,6 +9,8 @@ const CATEGORIES = [
 ];
 
 const API_URL = "https://openrouter.ai/api/v1/chat/completions";
+const REQUEST_TIMEOUT_MS = 30000;
+const MAX_ATTEMPTS = 2;
 
 const sleep = (ms) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -137,7 +139,7 @@ All feedback arrays must contain strings.
       },
     ],
 temperature: 0.2,
-max_tokens: 8000,
+max_tokens: 3000,
 stream: false,
   };
 
@@ -150,10 +152,10 @@ stream: false,
   let lastError;
 
   // Retry only transient connection failures.
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
     try {
       console.log(
-        `[DEVSTATIS] OpenRouter request attempt ${attempt}/3`
+        `[DEVSTATIS] OpenRouter request attempt ${attempt}/${MAX_ATTEMPTS}`
       );
 
       response = await fetch(API_URL, {
@@ -165,7 +167,7 @@ stream: false,
           "X-OpenRouter-Title": "DEVSTATIS",
         },
         body: JSON.stringify(payload),
-        signal: AbortSignal.timeout(90000),
+        signal: AbortSignal.timeout(REQUEST_TIMEOUT_MS),
       });
 
       break;
@@ -178,15 +180,15 @@ stream: false,
         attempt,
       });
 
-      if (attempt === 3) {
+      if (attempt === MAX_ATTEMPTS) {
         throw new Error(
-          `OpenRouter connection failed after 3 attempts: ${
+          `OpenRouter connection failed after ${MAX_ATTEMPTS} attempts: ${
             error.cause?.code || error.message
           }`
         );
       }
 
-      await sleep(attempt * 2000);
+      await sleep(1000);
     }
   }
 

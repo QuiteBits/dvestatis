@@ -2,26 +2,26 @@
 
 :root {
   /* Backgrounds */
-  --background: #080711;
-  --surface: #100e1b;
-  --card: #171326;
-  --card-hover: #1e1930;
+  --background: #07080a;
+  --surface: #0b0c0f;
+  --card: #0e0f13;
+  --card-hover: #121318;
 
   /* Borders */
-  --border: #29213d;
-  --border-hover: #514078;
+  --border: #1c1d22;
+  --border-hover: #33353c;
 
   /* Text */
-  --foreground: #f8fafc;
-  --muted: #9893a8;
-  --subtle: #686276;
+  --foreground: #f6f7fb;
+  --muted: #9a9ca3;
+  --subtle: #66686f;
 
   /* Brand */
-  --primary: #8b5cf6;
-  --primary-hover: #7c3aed;
-  --secondary: #a78bfa;
-  --accent: #c084fc;
-  --primary-foreground: #ffffff;
+  --primary: #b4f43e;
+  --primary-hover: #c8ff5a;
+  --secondary: #d8ff80;
+  --accent: #86efac;
+  --primary-foreground: #080a04;
 
   /* Status */
   --success: #34d399;
@@ -29,7 +29,7 @@
   --danger: #fb7185;
 
   /* Effects */
-  --glow: rgba(139, 92, 246, 0.25);
+  --glow: rgba(180, 244, 62, 0.22);
 }
 
 @theme inline {
@@ -70,9 +70,9 @@ body {
   min-height: 100vh;
   background:
     radial-gradient(
-      ellipse at 50% -20%,
-      rgba(124, 58, 237, 0.18),
-      transparent 55%
+      ellipse 80% 50% at 50% -10%,
+      rgba(180, 244, 62, 0.06),
+      transparent 60%
     ),
     var(--background);
   color: var(--foreground);
@@ -83,5 +83,19 @@ body {
 h1, h2, h3, h4, h5, h6 {
   font-family: "Josefin Sans Variable", sans-serif;
   font-weight: 700;
+}
+
+section[id] {
+  scroll-margin-top: 90px;
+}
+
+::selection {
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 2px;
 }
 

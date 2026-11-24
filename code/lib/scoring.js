@@ -339,6 +339,10 @@ export function calculateDeveloperScore(
     }
   }
 
+  const aiIncluded = Object.values(breakdown).some(
+    (item) => item.aiAvailable
+  );
+
   return {
     overallScore:
       availableWeight === 0
@@ -353,8 +357,10 @@ export function calculateDeveloperScore(
     coverage: availableWeight,
 
     scoringMethod: {
-      objectivePercentage: OBJECTIVE_RATIO * 100,
-      aiPercentage: AI_RATIO * 100,
+      objectivePercentage: aiIncluded
+        ? OBJECTIVE_RATIO * 100
+        : 100,
+      aiPercentage: aiIncluded ? AI_RATIO * 100 : 0,
     },
 
     breakdown,
