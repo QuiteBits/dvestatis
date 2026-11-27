@@ -53,10 +53,17 @@ export default function HowItWorks() {
         <div className="mx-auto mt-8 grid max-w-[1120px] gap-8 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:gap-6">
           {steps.map((step, index) => {
             const StepIcon = step.icon;
+            const delayClass = index === 0 ? "opacity-100" : index <= 1 ? "opacity-80" : "opacity-50";
+            const transformClass = index === 0 ? "translate-y-0" : index <= 1 ? "translate-y-[-4px]" : "translate-y-[-8px]";
             return (
-              <div key={step.number} className="contents">
-                <div className="flex items-start gap-3.5">
-                  <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-foreground">
+              <div
+                key={step.number}
+                className={`relative flex items-start gap-3.5 transition-opacity duration-500 ${delayClass}` }
+              >
+                <div className="flex items-start gap-3">
+                  <div
+                    className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-white/10 bg-white/[0.02] text-foreground"
+                  >
                     <StepIcon size={19} />
                   </div>
                   <div className="min-w-0">

@@ -9,6 +9,7 @@ import ProfileHeader from "./ProfileHeader";
 import RepositoryList from "./RepositoryList";
 import ScorePanel from "./ScorePanel";
 import StatsStrip from "./StatsStrip";
+import ScoreExplanation from "../ScoreExplanation";
 
 export default function Report({ data }) {
   const username = data.profile.username;
@@ -60,6 +61,8 @@ export default function Report({ data }) {
           />
         </aside>
       </div>
+
+      <ScoreExplanation score={data.score} />
 
       <section className="mt-6 flex flex-col items-start justify-between gap-4 rounded-2xl border border-primary/20 bg-gradient-to-r from-primary/[0.08] via-primary/[0.03] to-transparent p-6 sm:flex-row sm:items-center">
         <div>

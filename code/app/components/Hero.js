@@ -1,6 +1,7 @@
 import Link from "next/link";
 import DashboardPreview from "./DashboardPreview";
 import { ArrowRight } from "./icons";
+import { motion } from "motion/react";
 
 export default function Hero() {
   return (
@@ -19,19 +20,19 @@ export default function Hero() {
 
       <div className="relative mx-auto max-w-[1440px] px-6 lg:px-14">
         <div className="grid items-center gap-12 lg:grid-cols-[1.05fr_1fr] lg:gap-14">
-          <div className="max-w-2xl">
+          <div className="max-w-2xl animate-on-scroll">
             <span className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/[0.06] px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">
               <span className="h-1.5 w-1.5 rounded-full bg-primary shadow-[0_0_8px_var(--primary)]" />
               GitHub Profile Analytics
             </span>
 
-            <h1 className="mt-6 text-[2.7rem] font-bold leading-[1.05] tracking-[-0.02em] text-foreground sm:text-5xl lg:text-[3.25rem] xl:text-[3.55rem]">
+            <h1 className="mt-6 text-[2.7rem] font-bold leading-[1.05] tracking-[-0.02em] text-foreground sm:text-5xl lg:text-[3.25rem] xl:text-[3.55rem] animate-on-scroll-delay">
               Your GitHub activity.
               <br />
               <span className="text-primary">Decoded.</span>
             </h1>
 
-            <p className="mt-6 max-w-[500px] text-base leading-7 text-muted">
+            <p className="mt-6 max-w-[500px] text-base leading-7 text-muted animate-on-scroll-delay">
               Turn your GitHub profile into meaningful insights. Explore your
               repositories, understand your development patterns, and see the
               bigger picture behind your code.
